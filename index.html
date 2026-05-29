@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Stockholm 3D 1995</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#050508;overflow:hidden;font-family:'Courier New',monospace;color:#fff;touch-action:none}
+#c{display:block;width:100vw;height:100vh}
+#screen{position:fixed;inset:0;background:#050508;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;z-index:200;padding:24px}
+#screen h1{color:#ff6a00;font-size:12px;letter-spacing:5px;text-align:center}
+#bar-wrap{width:min(280px,80vw);height:3px;background:#1a1a2a}
+#bar{height:3px;background:#ff6a00;width:0%;transition:width .25s}
+#msg{color:#ffffff66;font-size:10px;letter-spacing:2px;text-align:center;
+  max-width:320px;line-height:1.7}
+#err-box{display:none;background:#1a0808;border:1px solid #ff444455;color:#ff8888;
+  font-size:10px;padding:14px 18px;max-width:340px;line-height:1.9;
+  text-align:center;white-space:pre-line}
+#retry{display:none;background:rgba(0,0,0,.88);border:1px solid #ff6a0077;
+  color:#ff6a00;padding:10px 22px;font-size:10px;letter-spacing:3px;
+  cursor:pointer;font-family:'Courier New',monospace}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10;display:none}
+#title{position:fixed;top:14px;left:50%;transform:translateX(-50%);
+  color:#ff6a00;font-size:10px;letter-spacing:4px;background:rgba(0,0,0,.6);
+  padding:4px 12px;white-space:nowrap;text-shadow:0 0 14px #ff6a0099;pointer-events:none}
+#yr{position:fixed;top:11px;right:14px;color:#ff6a00;font-size:20px;
+  letter-spacing:3px;text-shadow:0 0 20px #ff6a00bb;pointer-events:none}
+#stats{position:fixed;top:50px;right:14px;color:#ffffff55;font-size:9px;
+  line-height:1.9;letter-spacing:1px;background:rgba(0,0,0,.65);
+  padding:6px 10px;border:1px solid #ff6a0015;pointer-events:none}
+#btns{position:fixed;top:50px;left:14px;display:none;flex-direction:column;gap:5px;z-index:20}
+.btn{background:rgba(0,0,0,.88);border:1px solid #ff6a0055;color:#ff6a00;
+  padding:8px 13px;font-size:9px;letter-spacing:2px;cursor:pointer;
+  font-family:'Courier New',monospace;min-width:110px;-webkit-appearance:none}
+.btn:active{background:#ff6a0022}
+#legend{position:fixed;bottom:16px;right:14px;font-size:9px;line-height:1.9;
+  letter-spacing:1px;color:#ffffffaa;background:rgba(0,0,0,.75);
+  padding:7px 10px;border:1px solid #ff6a0022;pointer-events:none}
+.lr{display:flex;align-items:center;gap:6px}
+.ld{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+#ctrl{position:fixed;bottom:16px;left:14px;color:#ffffff44;font-size:9px;
+  line-height:1.9;letter-spacing:1px;background:rgba(0,0,0,.65);
+  padding:6px 10px;border:1px solid #ff6a0015;pointer-events:none}
+#tip{position:fixed;display:none;background:rgba(0,0,0,.92);
+  border:1px solid #ff6a0077;color:#ff6a00;padding:5px 10px;
+  font-size:10px;letter-spacing:2px;z-index:99;pointer-events:none}
+#scan{position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.02;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,#000 2px,#000 3px)}
+</style>
+</head>
+<body>
+
+<div id="screen">
+  <h1>STOCKHOLM 3D — 1995</h1>
+  <div id="bar-wrap"><div id="bar"></div></div>
+  <div id="msg">STARTAR...</div>
+  <div id="err-box"></div>
+  <button id="retry" onclick="startLoad()">↺ FÖRSÖK IGEN</button>
+</div>
+
+<canvas id="c"></canvas>
+<div id="scan"></div>
+
+<div id="hud">
+  <div id="title">STOCKHOLM — 3D SPELKARTA 1995</div>
+  <div id="yr">1995</div>
+  <div id="stats"></div>
+  <div id="ctrl">EN FINGER — ROTERA<br>TVÅ FINGRAR — PANORERA<br>NYPA — ZOOMA</div>
+  <div id="legend">
+    <div class="lr"><div class="ld" style="background:#0a2238"></div>VATTEN</div>
+    <div class="lr"><div class="ld" style="background:#0f1f0f"></div>PARK</div>
+    <div class="lr"><div class="ld" style="background:#2a3530"></div>BYGGNADER LÅG</div>
+    <div class="lr"><div class="ld" style="background:#3a5040"></div>BYGGNADER MED</div>
+    <div class="lr"><div class="ld" style="background:#5a7055"></div>BYGGNADER HÖG</div>
+    <div class="lr"><div class="ld" style="background:#383848"></div>BILVÄGAR</div>
+    <div class="lr"><div class="ld" style="background:#1e2018"></div>GÅNGVÄGAR</div>
+    <div class="lr"><div class="ld" style="background:#1a2244"></div>T-BANA / JÄRNVÄG</div>
+  </div>
+</div>
+
+<div id="btns">
+  <button class="btn" onclick="setView('3d')">◈ 3D-VY</button>
+  <button class="btn" onclick="setView('top')">⬛ TOPVY</button>
+  <button class="btn" onclick="setView('iso')">◧ ISO-VY</button>
+  <button class="btn" onclick="setView('street')">👁 GATU-VY</button>
+</div>
+<div id="tip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+        crossorigin="anonymous"></script>
+<script>
+'use strict';
+
+// ── Geo helpers ───────────────────────────────────────────────
+const REF_LON=18.065, REF_LAT=59.325;
+const M_LAT=111320, M_LON=111320*Math.cos(59.325*Math.PI/180);
+function geoXZ(lon,lat){ return {x:(lon-REF_LON)*M_LON, z:-(lat-REF_LAT)*M_LAT}; }
+
+// ── Overpass query ────────────────────────────────────────────
+const BBOX='59.29,17.96,59.37,18.13';
+const OQ=[
+  '[out:json][timeout:90];(',
+  'way["building"]('+BBOX+');',
+  'way["highway"]('+BBOX+');',
+  'way["natural"="water"]('+BBOX+');',
+  'way["waterway"~"river|canal|stream"]('+BBOX+');',
+  'way["landuse"~"park|forest|grass|meadow|cemetery|nature_reserve"]('+BBOX+');',
+  'way["leisure"~"park|garden|pitch|playground"]('+BBOX+');',
+  'way["railway"~"subway|tram|rail"]('+BBOX+');',
+  'relation["natural"="water"]('+BBOX+');',
+  ');out body;>;out skel qt;'
+].join('');
+
+const MIRRORS=[
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+];
+
+// ── OSM tag helpers ───────────────────────────────────────────
+function getH(t){
+  if(t.height){ var v=parseFloat(t.height); if(v>0) return Math.min(v,300); }
+  var l=t['building:levels']||t.levels;
+  if(l){ var v2=parseFloat(l); if(v2>0) return Math.min(v2*3.2,300); }
+  var b=(t.building||'').toLowerCase();
+  var map={cathedral:32,church:24,apartments:18,office:22,hotel:22,
+           public:15,civic:15,university:15,school:11,
+           commercial:12,retail:10,residential:12,
+           house:7.5,detached:7.5,industrial:9,warehouse:8};
+  return map[b]||10;
+}
+function getRW(hw){
+  var map={motorway:16,trunk:14,primary:9,secondary:7,tertiary:5.5,
+           residential:4,service:3,living_street:3.5,unclassified:4,
+           footway:1.8,pedestrian:3,cycleway:2,path:1.5,steps:2};
+  return map[hw]||3;
+}
+var FOOT={footway:1,pedestrian:1,path:1,steps:1,cycleway:1};
+
+// ── Globals ───────────────────────────────────────────────────
+var scene,camera,renderer,raycaster,running=false;
+var nameMap={};
+var ST={b:0,r:0,f:0,w:0,p:0};
+var sph={r:2800,phi:.58,theta:-.28};
+var tgt;
+var M={};
+
+function $(id){ return document.getElementById(id); }
+function setBar(p){ $('bar').style.width=Math.min(100,p)+'%'; }
+function setMsg(t){ $('msg').textContent=t; }
+function showErr(t){
+  var e=$('err-box'); e.style.display='block'; e.textContent=t;
+  $('retry').style.display='block'; setMsg('');
+}
+
+// ── Materials ─────────────────────────────────────────────────
+function initMats(){
+  function lm(c){ return new THREE.MeshLambertMaterial({color:c}); }
+  M.gnd  = lm(0x0e0e14);
+  M.water= new THREE.MeshLambertMaterial({color:0x0a2238,transparent:true,opacity:.9});
+  M.park = lm(0x0f1f0f);
+  M.bLow = lm(0x2a3530);
+  M.bMid = lm(0x3a5040);
+  M.bHigh= lm(0x5a7055);
+  M.rMaj = lm(0x383848);
+  M.rMin = lm(0x252530);
+  M.foot = lm(0x1e2018);
+  M.rail = lm(0x1a2244);
+}
+
+// ── Scene ─────────────────────────────────────────────────────
+function initScene(){
+  tgt = new THREE.Vector3(0,0,0);
+  scene  = new THREE.Scene();
+  scene.background = new THREE.Color(0x050508);
+  scene.fog = new THREE.FogExp2(0x050508, .00016);
+
+  camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 1, 30000);
+
+  renderer = new THREE.WebGLRenderer({canvas:$('c'), antialias:true});
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  scene.add(new THREE.AmbientLight(0x334466, .9));
+
+  var sun = new THREE.DirectionalLight(0xfff0cc, 1.6);
+  sun.position.set(2000,3000,1500);
+  sun.castShadow = true;
+  sun.shadow.mapSize.width  = 1024;
+  sun.shadow.mapSize.height = 1024;
+  sun.shadow.camera.left   = -5000;
+  sun.shadow.camera.right  =  5000;
+  sun.shadow.camera.top    =  5000;
+  sun.shadow.camera.bottom = -5000;
+  sun.shadow.camera.far    = 12000;
+  scene.add(sun);
+
+  var fill = new THREE.DirectionalLight(0x4466aa, .3);
+  fill.position.set(-1000,500,-1000);
+  scene.add(fill);
+
+  raycaster = new THREE.Raycaster();
+
+  var gGeo = new THREE.PlaneGeometry(24000, 24000);
+  gGeo.rotateX(-Math.PI/2);
+  scene.add(new THREE.Mesh(gGeo, M.gnd));
+
+  window.addEventListener('resize', function(){
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+}
+
+function moveCam(){
+  camera.position.set(
+    tgt.x + sph.r*Math.sin(sph.phi)*Math.sin(sph.theta),
+    tgt.y + sph.r*Math.cos(sph.phi),
+    tgt.z + sph.r*Math.sin(sph.phi)*Math.cos(sph.theta)
+  );
+  camera.lookAt(tgt);
+}
+
+// ── Geometry ──────────────────────────────────────────────────
+function area2d(pts){
+  var a=0;
+  for(var i=0;i<pts.length;i++){
+    var j=(i+1)%pts.length;
+    a+=pts[i].x*pts[j].z - pts[j].x*pts[i].z;
+  }
+  return Math.abs(a)/2;
+}
+
+function addBuilding(pts,h,mat,name){
+  if(pts.length<3 || area2d(pts)<5) return;
+  var sh=new THREE.Shape();
+  sh.moveTo(pts[0].x, pts[0].z);
+  for(var i=1;i<pts.length;i++) sh.lineTo(pts[i].x, pts[i].z);
+  sh.closePath();
+  var geo=new THREE.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});
+  geo.rotateX(-Math.PI/2);
+  var mesh=new THREE.Mesh(geo,mat);
+  mesh.castShadow=true; mesh.receiveShadow=true;
+  if(name) nameMap[mesh.uuid]=name;
+  scene.add(mesh); ST.b++;
+}
+
+function addRoad(pts,w,mat,y){
+  if(y===undefined) y=.15;
+  if(pts.length<2) return;
+  var hw=w/2, pos=[], idx=[];
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i], dx, dz;
+    if(i===0){ dx=pts[1].x-p.x; dz=pts[1].z-p.z; }
+    else if(i===pts.length-1){ dx=p.x-pts[i-1].x; dz=p.z-pts[i-1].z; }
+    else{ dx=pts[i+1].x-pts[i-1].x; dz=pts[i+1].z-pts[i-1].z; }
+    var l=Math.sqrt(dx*dx+dz*dz)||1;
+    var nx=-dz/l, nz=dx/l;
+    pos.push(p.x+nx*hw, y, p.z+nz*hw,
+             p.x-nx*hw, y, p.z-nz*hw);
+  }
+  for(var i=0;i<pts.length-1;i++){
+    var a=i*2,b=a+1,c=a+2,d=a+3;
+    idx.push(a,b,c, b,d,c);
+  }
+  var geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  geo.setIndex(idx); geo.computeVertexNormals();
+  var mesh=new THREE.Mesh(geo,mat);
+  mesh.receiveShadow=true; scene.add(mesh);
+}
+
+function addFlat(pts,mat,y){
+  if(y===undefined) y=.05;
+  if(pts.length<3 || area2d(pts)<15) return;
+  var sh=new THREE.Shape();
+  sh.moveTo(pts[0].x, pts[0].z);
+  for(var i=1;i<pts.length;i++) sh.lineTo(pts[i].x, pts[i].z);
+  sh.closePath();
+  var geo=new THREE.ShapeGeometry(sh);
+  geo.rotateX(-Math.PI/2);
+  var pa=geo.attributes.position;
+  for(var i=0;i<pa.count;i++) pa.setY(i,y);
+  pa.needsUpdate=true;
+  var mesh=new THREE.Mesh(geo,mat);
+  mesh.receiveShadow=true; scene.add(mesh);
+}
+
+function offLine(pts,off){
+  return pts.map(function(p,i){
+    var dx,dz;
+    if(i===0){ dx=pts[1].x-p.x; dz=pts[1].z-p.z; }
+    else if(i===pts.length-1){ dx=p.x-pts[i-1].x; dz=p.z-pts[i-1].z; }
+    else{ dx=pts[i+1].x-pts[i-1].x; dz=pts[i+1].z-pts[i-1].z; }
+    var l=Math.sqrt(dx*dx+dz*dz)||1;
+    return {x:p.x+(-dz/l)*off, z:p.z+(dx/l)*off};
+  });
+}
+
+// ── Build 3D from OSM JSON ────────────────────────────────────
+function buildFromJSON(json){
+  setMsg('INDEXERAR NODER...'); setBar(35);
+
+  var nodes={};
+  json.elements.forEach(function(e){
+    if(e.type==='node') nodes[e.id]={lon:e.lon, lat:e.lat};
+  });
+
+  var ways=json.elements.filter(function(e){ return e.type==='way'; });
+  var i=0;
+
+  function batch(){
+    var end=Math.min(i+300, ways.length);
+    for(;i<end;i++){
+      var way=ways[i];
+      var tags=way.tags||{};
+      var pts=(way.nodes||[])
+        .map(function(id){ return nodes[id]; })
+        .filter(Boolean)
+        .map(function(n){ return geoXZ(n.lon,n.lat); });
+      if(pts.length<2) continue;
+
+      // BUILDING
+      if(tags.building){
+        var h=getH(tags);
+        addBuilding(pts, h, h>40?M.bHigh:h>15?M.bMid:M.bLow, tags.name||null);
+        continue;
+      }
+      // WATER
+      if(tags.natural==='water'||/river|canal|stream/.test(tags.waterway||'')){
+        if(pts.length>=3){ addFlat(pts,M.water,-.1); ST.w++; }
+        continue;
+      }
+      // PARK
+      if(/park|forest|grass|meadow|cemetery|nature_reserve/.test(tags.landuse||'')||
+         /park|garden|pitch|playground/.test(tags.leisure||'')){
+        if(pts.length>=3){ addFlat(pts,M.park,.05); ST.p++; }
+        continue;
+      }
+      // RAILWAY
+      if(tags.railway && /subway|tram|rail/.test(tags.railway)){
+        addRoad(pts,3.5,M.rail,.08); continue;
+      }
+      // HIGHWAY
+      var hw=tags.highway||'';
+      if(!hw) continue;
+      var w=parseFloat(tags.width||0)||getRW(hw);
+
+      if(FOOT[hw]){
+        addRoad(pts,w,M.foot,.10); ST.f++;
+      } else if(/motorway|trunk|primary/.test(hw)){
+        addRoad(pts,w,M.rMaj,.22);
+        addRoad(offLine(pts,(w/2+2.5)*-1),1.8,M.foot,.12);
+        addRoad(offLine(pts,(w/2+2.5)),1.8,M.foot,.12);
+        ST.r++;
+      } else {
+        addRoad(pts,w,M.rMin,.16);
+        if(hw!=='service'){
+          addRoad(offLine(pts,(w/2+1.8)*-1),1.4,M.foot,.10);
+          addRoad(offLine(pts,(w/2+1.8)),1.4,M.foot,.10);
+        }
+        ST.r++;
+      }
+    }
+
+    var pct=35+Math.round(i/ways.length*60);
+    setBar(pct);
+    setMsg('BYGGER... '+Math.round(i/ways.length*100)+'%');
+
+    if(i<ways.length){ setTimeout(batch,0); return; }
+
+    // Done!
+    setBar(100);
+    $('stats').innerHTML=
+      'BYGGNADER: '+ST.b.toLocaleString()+'<br>'+
+      'BILVÄGAR: '+ST.r.toLocaleString()+'<br>'+
+      'GÅNGVÄGAR: '+ST.f.toLocaleString()+'<br>'+
+      'VATTEN: '+ST.w+'&nbsp;&nbsp;PARKER: '+ST.p;
+
+    setTimeout(function(){
+      $('screen').style.display='none';
+      $('hud').style.display='block';
+      $('btns').style.display='flex';
+      if(!running){
+        running=true;
+        (function loop(){ requestAnimationFrame(loop); renderer.render(scene,camera); })();
+      }
+    }, 300);
+  }
+  batch();
+}
+
+// ── Fetch with manual timeout (Safari-safe, no AbortSignal) ──
+function fetchWithTimeout(url, options, timeoutMs){
+  return new Promise(function(resolve, reject){
+    var timedOut=false;
+    var timer=setTimeout(function(){
+      timedOut=true;
+      reject(new Error('Timeout efter '+timeoutMs+'ms'));
+    }, timeoutMs);
+
+    fetch(url, options).then(function(res){
+      clearTimeout(timer);
+      if(!timedOut) resolve(res);
+    }).catch(function(err){
+      clearTimeout(timer);
+      if(!timedOut) reject(err);
+    });
+  });
+}
+
+// ── Fetch OSM — tries mirrors in order ────────────────────────
+function fetchOSM(mi){
+  if(mi===undefined) mi=0;
+  if(mi>=MIRRORS.length){
+    showErr(
+      'Kunde inte nå Overpass API.\n\n'+
+      'Kontrollera:\n'+
+      '• Internetanslutning\n'+
+      '• Att webbläsaren tillåter externa anrop\n\n'+
+      'Overpass API kan vara tillfälligt ned.\n'+
+      'Försök igen om några minuter.'
+    );
+    return;
+  }
+
+  var url=MIRRORS[mi];
+  setMsg('HÄMTAR KARTDATA... (server '+(mi+1)+'/'+MIRRORS.length+')');
+  setBar(10+mi*5);
+
+  fetchWithTimeout(url, {
+    method: 'POST',
+    headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: 'data='+encodeURIComponent(OQ)
+  }, 90000)
+  .then(function(res){
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    setMsg('TOLKAR DATA...'); setBar(28);
+    return res.json();
+  })
+  .then(function(json){
+    if(!json.elements||!json.elements.length) throw new Error('Tom respons');
+    buildFromJSON(json);
+  })
+  .catch(function(err){
+    console.warn('Mirror '+mi+' failed: '+err.message);
+    setTimeout(function(){ fetchOSM(mi+1); }, 800);
+  });
+}
+
+// ── Mouse controls ────────────────────────────────────────────
+var cv=$('c');
+var mdrag=false, mright=false, mlx=0, mly=0;
+
+cv.addEventListener('mousedown',function(e){
+  mdrag=true; mright=e.button===2; mlx=e.clientX; mly=e.clientY;
+});
+cv.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+window.addEventListener('mouseup',function(){ mdrag=false; });
+window.addEventListener('mousemove',function(e){
+  if(mdrag){
+    var dx=e.clientX-mlx, dy=e.clientY-mly;
+    mlx=e.clientX; mly=e.clientY;
+    if(mright){
+      var r=new THREE.Vector3();
+      var dir=new THREE.Vector3();
+      camera.getWorldDirection(dir);
+      r.crossVectors(new THREE.Vector3(0,1,0), dir).normalize();
+      tgt.addScaledVector(r, dx);
+      tgt.y-=dy;
+    } else {
+      sph.theta -= dx*.004;
+      sph.phi = Math.max(.05, Math.min(Math.PI/2-.02, sph.phi+dy*.004));
+    }
+    moveCam();
+  }
+  if(!scene||!raycaster) return;
+  var m=new THREE.Vector2((e.clientX/innerWidth)*2-1, -(e.clientY/innerHeight)*2+1);
+  raycaster.setFromCamera(m, camera);
+  var hits=raycaster.intersectObjects(scene.children);
+  var named=null;
+  for(var i=0;i<hits.length;i++){
+    if(nameMap[hits[i].object.uuid]){ named=hits[i]; break; }
+  }
+  var tip=$('tip');
+  if(named){
+    tip.style.display='block';
+    tip.style.left=(e.clientX+14)+'px';
+    tip.style.top=(e.clientY-8)+'px';
+    tip.textContent=nameMap[named.object.uuid].toUpperCase();
+  } else {
+    tip.style.display='none';
+  }
+});
+cv.addEventListener('wheel',function(e){
+  sph.r=Math.max(50,Math.min(14000,sph.r+e.deltaY*.9));
+  moveCam();
+},{passive:true});
+
+// ── Touch controls (iPhone/iPad) ─────────────────────────────
+var touches=[], lastDist=0, lastMidX=0, lastMidY=0;
+
+cv.addEventListener('touchstart',function(e){
+  e.preventDefault();
+  touches=Array.prototype.slice.call(e.touches);
+  if(touches.length===2){
+    lastDist=Math.hypot(
+      touches[0].clientX-touches[1].clientX,
+      touches[0].clientY-touches[1].clientY);
+    lastMidX=(touches[0].clientX+touches[1].clientX)/2;
+    lastMidY=(touches[0].clientY+touches[1].clientY)/2;
+  }
+},{passive:false});
+
+cv.addEventListener('touchmove',function(e){
+  e.preventDefault();
+  var t=Array.prototype.slice.call(e.touches);
+
+  if(t.length===1 && touches.length===1){
+    var dx=t[0].clientX-touches[0].clientX;
+    var dy=t[0].clientY-touches[0].clientY;
+    sph.theta -= dx*.004;
+    sph.phi = Math.max(.05, Math.min(Math.PI/2-.02, sph.phi+dy*.004));
+    moveCam();
+  }
+  else if(t.length===2){
+    var dist=Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
+    var midX=(t[0].clientX+t[1].clientX)/2;
+    var midY=(t[0].clientY+t[1].clientY)/2;
+
+    if(lastDist>0){
+      sph.r = Math.max(50, Math.min(14000, sph.r*(lastDist/dist)));
+    }
+    var pdx=midX-lastMidX, pdy=midY-lastMidY;
+    var r=new THREE.Vector3();
+    var dir=new THREE.Vector3();
+    camera.getWorldDirection(dir);
+    r.crossVectors(new THREE.Vector3(0,1,0), dir).normalize();
+    tgt.addScaledVector(r, -pdx*1.5);
+    tgt.y += pdy*1.5;
+
+    lastDist=dist; lastMidX=midX; lastMidY=midY;
+    moveCam();
+  }
+  touches=t;
+},{passive:false});
+
+cv.addEventListener('touchend',function(e){
+  touches=Array.prototype.slice.call(e.touches);
+  if(touches.length<2) lastDist=0;
+},{passive:false});
+
+// ── View presets ──────────────────────────────────────────────
+function setView(mode){
+  var V={
+    '3d':    {r:2800,phi:.58,theta:-.28},
+    'top':   {r:3200,phi:.02,theta:0},
+    'iso':   {r:2500,phi:.58,theta:.80},
+    'street':{r:200, phi:1.38,theta:-.28}
+  };
+  var v=V[mode]; if(!v) return;
+  var s=0, p0=sph.phi, t0=sph.theta, r0=sph.r;
+  function step(){
+    s++;
+    var e=s/40, ease=e<.5?2*e*e:1-Math.pow(-2*e+2,2)/2;
+    sph.phi   = p0+(v.phi-p0)*ease;
+    sph.theta = t0+(v.theta-t0)*ease;
+    sph.r     = r0+(v.r-r0)*ease;
+    moveCam();
+    if(s<40) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── Start ─────────────────────────────────────────────────────
+function waitForThree(attempts){
+  if(typeof THREE!=='undefined'){
+    initMats();
+    initScene();
+    moveCam();
+    setMsg('REDO — HÄMTAR KARTDATA...');
+    setBar(8);
+    setTimeout(function(){ fetchOSM(0); }, 200);
+  } else if(attempts>0){
+    setTimeout(function(){ waitForThree(attempts-1); }, 300);
+  } else {
+    showErr('Three.js laddades inte.\nKontrollera internet och ladda om sidan.');
+  }
+}
+
+function startLoad(){
+  $('err-box').style.display='none';
+  $('retry').style.display='none';
+  setBar(0); setMsg('STARTAR...');
+  waitForThree(30);
+}
+
+window.addEventListener('load', startLoad);
+</script>
+</body>
+</html>
