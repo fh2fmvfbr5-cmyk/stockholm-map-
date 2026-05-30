@@ -594,8 +594,8 @@ function updateDriving(dt){
   v.x=Math.max(-380,Math.min(380,v.x));v.z=Math.max(-380,Math.min(380,v.z));
   P.x=v.x;P.z=v.z;
   for(var i=0;i<colBoxes.length;i++){if(colBoxes[i].ref===v){colBoxes[i].minX=v.x-1.1;colBoxes[i].maxX=v.x+1.1;colBoxes[i].minZ=v.z-2.3;colBoxes[i].maxZ=v.z+2.3;}}
-  document.getElementById('speed-hud').style.display='block';
-  document.getElementById('speed-hud').textContent=Math.round(Math.abs(v.speed)*3.6)+' KM/H';
+  document.getElementById('speedhud').style.display='block';
+  document.getElementById('speedhud').textContent=Math.round(Math.abs(v.speed)*3.6)+' KM/H';
 }
 
 function updateNPCs(dt){
@@ -779,7 +779,7 @@ function updateMissionMarkers(dt){
 function startMission(marker){
   P.missionActive=marker.mission;P.missionKills=0;marker.active=false;
   showDlg(marker.mission.giver,marker.mission.text);
-  document.getElementById('obj-box').textContent='> '+marker.mission.obj;
+  document.getElementById('objbox').textContent='> '+marker.mission.obj;
   // Spawn target marker
   missionMarkers.push({x:marker.mission.target.x,z:marker.mission.target.z,
     mission:null,isTarget:true,rot:0,active:false});
@@ -791,7 +791,7 @@ function checkMissionProg(){
 }
 function completeMission(){
   var ms=P.missionActive;P.money+=ms.reward;P.missionActive=null;P.missionKills=0;
-  document.getElementById('obj-box').textContent='';
+  document.getElementById('objbox').textContent='';
   showMsg('UPPDRAG KLART!\n$ +'+ms.reward);showDlg(ms.giver,'Bra jobbat. Pengarna är dina.');
   if(ms.reward>=2000)giveWep(7);else if(ms.reward>=1000)giveWep(5);
   addWanted(-.5);P.score+=ms.reward;
@@ -814,7 +814,7 @@ function tryEnterVehicle(){
   }
   showMsg('INGEN BIL I NÄRHETEN');
 }
-function exitVehicle(){if(!P.inVehicle)return;P.inVehicle.occupied=false;P.x=P.inVehicle.x+2.5;P.z=P.inVehicle.z;P.inVehicle=null;document.getElementById('speed-hud').style.display='none';}
+function exitVehicle(){if(!P.inVehicle)return;P.inVehicle.occupied=false;P.x=P.inVehicle.x+2.5;P.z=P.inVehicle.z;P.inVehicle=null;document.getElementById('speedhud').style.display='none';}
 function interact(){
   missionMarkers.forEach(function(m){if(!m.active)return;var d=Math.sqrt((P.x-m.x)*(P.x-m.x)+(P.z-m.z)*(P.z-m.z));if(d<3.5)startMission(m);});
   shopMarkers.forEach(function(m){var d=Math.sqrt((P.x-m.x)*(P.x-m.x)+(P.z-m.z)*(P.z-m.z));if(d<3.5)openShop(m.shop);});
@@ -826,7 +826,7 @@ function toggleCam(){cam.zoom=cam.zoom>2?1.2:3.0;}
 function updateArea(){
   var best='STOCKHOLM',bd=9999;
   AREAS.forEach(function(a){var d=Math.sqrt((P.x-a.x)*(P.x-a.x)+(P.z-a.z)*(P.z-a.z));if(d<a.r&&d<bd){bd=d;best=a.name;}});
-  if(best!==currentArea){currentArea=best;var el=document.getElementById('area-txt');el.textContent=best;el.style.opacity='1';setTimeout(function(){el.style.opacity='0';},3000);}
+  if(best!==currentArea){currentArea=best;var el=document.getElementById('areatxt');el.textContent=best;el.style.opacity='1';setTimeout(function(){el.style.opacity='0';},3000);}
 }
 function updateRadio(dt){radioT+=dt;if(radioT>60){radioT=0;radioIdx=(radioIdx+1)%RADIO.length;var r=document.getElementById('radio');if(r)r.textContent=RADIO[radioIdx];}}
 function dynFactionEvents(dt){dynEventT-=dt;if(dynEventT>0)return;dynEventT=25+Math.random()*30;
@@ -842,9 +842,9 @@ function killPlayer(){if(P.dead)return;P.dead=true;P.hp=0;exitVehicle();
   setTimeout(function(){ds.classList.add('show');setTimeout(function(){document.getElementById('dead-t').style.display='block';document.getElementById('dead-s').style.display='block';document.getElementById('dead-b').style.display='block';},1000);},200);}
 function respawn(){P.dead=false;P.hp=100;P.armor=0;P.money=Math.max(0,P.money-200);P.wanted=0;P.weapon=0;P.weapons=[JSON.parse(JSON.stringify(WEAPONS[0]))];P.x=0;P.z=0;pVel.x=0;pVel.z=0;var ds=document.getElementById('dead');ds.classList.remove('show');ds.style.display='none';document.getElementById('dead-t').style.display='none';document.getElementById('dead-s').style.display='none';document.getElementById('dead-b').style.display='none';showMsg('ARRESTERAD. $200 BÖTER.');updateWepHUD();}
 function openShop(name){
-  document.getElementById('shop').style.display='flex';document.getElementById('shop-title').textContent=name;
-  document.getElementById('shop-cash').textContent='PENGAR: $'+P.money.toLocaleString();
-  var items=document.getElementById('shop-items');items.innerHTML='';
+  document.getElementById('shop').style.display='flex';document.getElementById('shoptitle').textContent=name;
+  document.getElementById('shopcash').textContent='PENGAR: $'+P.money.toLocaleString();
+  var items=document.getElementById('shopitems');items.innerHTML='';
   var shopItems=name==='VAPENAFFÄR'?WEAPONS.filter(function(w){return w.price>0;}):
     [{name:'BIKER JACKA',price:300,type:'armor'},{name:'BALKAN ROCK',price:400,type:'armor'},{name:'RYSK KAPPA',price:500,type:'armor'},{name:'VIT KOSTYM',price:800,type:'armor'}];
   shopItems.forEach(function(item){
@@ -854,19 +854,19 @@ function openShop(name){
       if(P.money>=item.price){P.money-=item.price;
         if(item.type==='armor'){P.armor=Math.min(100,P.armor+40);showMsg('RUSTNING +40');}
         else giveWep(WEAPONS.indexOf(item));
-        document.getElementById('shop-cash').textContent='PENGAR: $'+P.money.toLocaleString();
+        document.getElementById('shopcash').textContent='PENGAR: $'+P.money.toLocaleString();
       }else showMsg('INTE TILLRÄCKLIGT MED PENGAR');
     });items.appendChild(div);
   });
 }
 function closeShop(){document.getElementById('shop').style.display='none';}
-function showDlg(name,text){document.getElementById('dlg').style.display='block';document.getElementById('dlg-name').textContent=name.toUpperCase();document.getElementById('dlg-txt').textContent=text;setTimeout(closeDlg,7000);}
+function showDlg(name,text){document.getElementById('dlg').style.display='block';document.getElementById('dlgname').textContent=name.toUpperCase();document.getElementById('dlgtxt').textContent=text;setTimeout(closeDlg,7000);}
 function closeDlg(){document.getElementById('dlg').style.display='none';}
-function showMsg(t){var el=document.getElementById('msg-box');el.innerHTML=t.replace(/\n/g,'<br>');el.style.opacity='1';clearTimeout(showMsg._t);showMsg._t=setTimeout(function(){el.style.opacity='0';},3200);}
+function showMsg(t){var el=document.getElementById('msgbox');el.innerHTML=t.replace(/\n/g,'<br>');el.style.opacity='1';clearTimeout(showMsg._t);showMsg._t=setTimeout(function(){el.style.opacity='0';},3200);}
 function showDmg(){var h=document.getElementById('hud');if(!h)return;h.style.background='rgba(200,0,0,.18)';setTimeout(function(){h.style.background='';},100);}
 function updateWepHUD(){var w=P.weapons[P.weapon];document.getElementById('wname').textContent=w.name;document.getElementById('wammo').textContent=w.ammo<0?'∞':w.ammo+'/'+w.maxAmmo;}
 function updateHUD(){
-  document.getElementById('hp-fill').style.width=Math.max(0,P.hp)+'%';
+  document.getElementById('hpfill').style.width=Math.max(0,P.hp)+'%';
   document.getElementById('armor-fill').style.width=P.armor+'%';
   document.getElementById('money').textContent='$'+P.money.toLocaleString();
   ['s1','s2','s3'].forEach(function(id,i){document.getElementById(id).className='star'+(i<Math.ceil(P.wanted)?' on':'');});
