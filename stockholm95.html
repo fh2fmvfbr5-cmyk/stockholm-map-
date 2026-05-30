@@ -125,33 +125,39 @@ body{background:#000;overflow:hidden;font-family:'Courier New',monospace;touch-a
   <div id="dead-s">ARRESTERAD — STOCKHOLM POLIS 1995</div>
   <button id="dead-b" onclick="respawn()">FORTSÄTT</button>
 </div>
+<script src="three.min.js"></script>
 <script>
-(function() {
-  var srcs = [
-    'three.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
-    'https://unpkg.com/three@0.128.0/build/three.min.js'
-  ];
-  var i = 0;
-  function tryNext() {
-    if (i >= srcs.length) {
-      document.getElementById('load-sub').textContent = 'FEL: Kan inte ladda Three.js';
-      return;
-    }
-    var s = document.createElement('script');
-    s.src = srcs[i++];
-    s.onload = function() {
-      window.threeReady = true;
-    };
-    s.onerror = function() { tryNext(); };
-    document.head.appendChild(s);
+// Load Three.js then start game
+var SRCS = [
+  'three.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+  'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
+  'https://unpkg.com/three@0.128.0/build/three.min.js'
+];
+var srcIdx = 0;
+function loadThree() {
+  if (srcIdx >= SRCS.length) {
+    document.getElementById('load-sub').textContent = 'FEL: Kan inte ladda Three.js';
+    document.getElementById('load-sub').style.color = '#ff4444';
+    return;
   }
-  tryNext();
-})();
-</script>
-<script>
-'use strict';
+  var s = document.createElement('script');
+  s.src = SRCS[srcIdx++];
+  s.onload = function() {
+    if (typeof THREE !== 'undefined') {
+      document.getElementById('load-sub').textContent = 'STARTAR...';
+      setTimeout(init, 100);
+    } else {
+      loadThree();
+    }
+  };
+  s.onerror = function() { loadThree(); };
+  document.body.appendChild(s);
+}
+window.addEventListener('load', function() {
+  setTimeout(loadThree, 200);
+});
+
 // ═══════════════════════════════════════════════════════
 //  STOCKHOLM '95 — Three.js GTA-style game
 //  Requires three.min.js in same folder
@@ -1062,24 +1068,6 @@ function loop(){
   renderer.render(scene,camera);
 }
 
-
-
-// ── BOOT ─────────────────────────────────────────────
-window.addEventListener('load', function() {
-  var attempts = 0;
-  function waitForThree() {
-    attempts++;
-    if (typeof THREE !== 'undefined') {
-      init();
-    } else if (attempts < 60) {
-      setTimeout(waitForThree, 200);
-    } else {
-      document.getElementById('load-sub').textContent = 'FEL: Three.js laddades inte';
-      document.getElementById('load-sub').style.color = '#ff4444';
-    }
-  }
-  waitForThree();
-});
 </script>
 </body>
 </html>
