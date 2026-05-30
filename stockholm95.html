@@ -118,14 +118,23 @@ var _3src=['three.min.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/
 var _3i=0;
 function _loadThree(){
   if(_3i>=_3src.length){lp(0,'FEL: Three.js kunde inte laddas');return;}
+  var src=_3src[_3i++];
   var s=document.createElement('script');
-  s.src=_3src[_3i++];
-  s.onload=function(){
-    if(typeof THREE!=='undefined'){lp(5,'THREE.JS OK — STARTAR...');init();}
-    else _loadThree();
-  };
-  s.onerror=function(){_loadThree();};
+  s.src=src;
   document.head.appendChild(s);
+  // Poll for THREE instead of relying on onload
+  var attempts=0;
+  var poll=setInterval(function(){
+    attempts++;
+    if(typeof THREE!=='undefined'){
+      clearInterval(poll);
+      lp(5,'THREE.JS OK — STARTAR...');
+      init();
+    } else if(attempts>50){
+      clearInterval(poll);
+      _loadThree(); // try next source
+    }
+  },200);
 }
 
 
@@ -1043,7 +1052,7 @@ function loop(){
 
 
 window.addEventListener('load',function(){
-  setTimeout(_loadThree,100);
+  _loadThree();
 });
 </script>
 </body>
