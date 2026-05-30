@@ -27,61 +27,45 @@ body{background:#000;overflow:hidden;font-family:'Courier New',monospace;touch-a
 #whud{position:fixed;bottom:118px;left:50%;transform:translateX(-50%);text-align:center}
 #wname{color:#ffdd44;font-size:10px;letter-spacing:2px}
 #wammo{color:#888;font-size:9px;margin-top:1px}
-#areatxt{position:fixed;top:16px;left:50%;transform:translateX(-50%);
-  color:#ffffff66;font-size:9px;letter-spacing:5px;transition:opacity .5s}
-#msgbox{position:fixed;top:46px;left:50%;transform:translateX(-50%);
-  color:#ffdd44;font-size:10px;letter-spacing:2px;text-align:center;
-  text-shadow:0 0 8px #ffdd4499;max-width:80vw;line-height:1.7;transition:opacity .5s}
-#objbox{position:fixed;top:16px;right:16px;color:#ffffff88;font-size:9px;
-  letter-spacing:1px;text-align:right;line-height:1.8;max-width:200px}
+#areatxt{position:fixed;top:16px;left:50%;transform:translateX(-50%);color:#ffffff66;font-size:9px;letter-spacing:5px;transition:opacity .5s}
+#msgbox{position:fixed;top:46px;left:50%;transform:translateX(-50%);color:#ffdd44;font-size:10px;letter-spacing:2px;text-align:center;text-shadow:0 0 8px #ffdd4499;max-width:80vw;line-height:1.7;transition:opacity .5s}
+#objbox{position:fixed;top:16px;right:16px;color:#ffffff88;font-size:9px;letter-spacing:1px;text-align:right;line-height:1.8;max-width:200px}
 #minimap{position:fixed;bottom:16px;right:16px;border:1px solid #ffffff22}
-#radio{position:fixed;top:16px;left:16px;color:#88ff88;font-size:9px;letter-spacing:1px;
-  background:rgba(0,0,0,.5);padding:3px 8px;border:1px solid #22441133;line-height:1.7}
+#radio{position:fixed;top:16px;left:16px;color:#88ff88;font-size:9px;letter-spacing:1px;background:rgba(0,0,0,.5);padding:3px 8px;border:1px solid #22441133;line-height:1.7}
 #speedhud{position:fixed;bottom:80px;left:160px;color:#aaddff;font-size:11px;letter-spacing:2px;display:none}
-#dlg{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.92);
-  border-top:1px solid #cc222255;padding:14px 18px;display:none;pointer-events:all;z-index:50}
+#dlg{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.92);border-top:1px solid #cc222255;padding:14px 18px;display:none;pointer-events:all;z-index:50}
 #dlgname{color:#ffdd44;font-size:10px;letter-spacing:3px;margin-bottom:5px}
 #dlgtxt{color:#fff;font-size:10px;line-height:1.7;letter-spacing:1px}
 #dlgx{position:absolute;top:10px;right:14px;color:#cc2222;cursor:pointer;font-size:10px;letter-spacing:2px}
-#shop{position:fixed;inset:0;background:rgba(0,0,0,.94);display:none;
-  align-items:center;justify-content:center;z-index:60;pointer-events:all}
+#shop{position:fixed;inset:0;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center;z-index:60;pointer-events:all}
 #shopinner{border:1px solid #cc222255;padding:22px;min-width:270px;max-width:88vw}
 #shoptitle{color:#cc2222;font-size:12px;letter-spacing:4px;margin-bottom:14px}
 #shopcash{color:#ffdd44;font-size:10px;margin-bottom:10px}
-.sitem{color:#fff;font-size:10px;letter-spacing:1px;padding:7px 0;
-  border-bottom:1px solid #1a1a1a;cursor:pointer;display:flex;justify-content:space-between}
+.sitem{color:#fff;font-size:10px;letter-spacing:1px;padding:7px 0;border-bottom:1px solid #1a1a1a;cursor:pointer;display:flex;justify-content:space-between}
 .sitem:hover{color:#ffdd44}.sitem .sp{color:#ffdd44}
 #shopx{margin-top:14px;color:#cc2222;font-size:9px;cursor:pointer;letter-spacing:3px}
 #mobile{position:fixed;bottom:0;left:0;right:0;height:190px;display:none;pointer-events:none;z-index:20}
-.jb{position:absolute;width:96px;height:96px;border-radius:50%;
-  border:2px solid #ffffff22;background:rgba(0,0,0,.4);
-  display:flex;align-items:center;justify-content:center;pointer-events:all}
+.jb{position:absolute;width:96px;height:96px;border-radius:50%;border:2px solid #ffffff22;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;pointer-events:all}
 .jk{width:38px;height:38px;border-radius:50%;background:#ffffff33;pointer-events:none}
 #jL{bottom:28px;left:22px}#jR{bottom:28px;right:22px}
-.mb{position:absolute;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:9px;letter-spacing:1px;
-  pointer-events:all;color:#fff;border:2px solid}
+.mb{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:1px;pointer-events:all;color:#fff;border:2px solid}
 #bFire{width:54px;height:54px;bottom:96px;right:144px;background:rgba(170,20,20,.75);border-color:#ff4444}
 #bRun{width:44px;height:44px;bottom:30px;left:144px;background:rgba(0,0,0,.6);border-color:#ffffff33}
 #bCar{width:44px;height:44px;bottom:96px;left:144px;background:rgba(0,70,160,.7);border-color:#4488ff}
 #bCam{width:38px;height:38px;bottom:150px;right:22px;background:rgba(0,0,0,.6);border-color:#ffffff22;font-size:12px}
 #bWep{width:38px;height:38px;bottom:150px;right:76px;background:rgba(0,0,0,.6);border-color:#ffdd4444}
-#dead{position:fixed;inset:0;background:rgba(0,0,0,0);display:none;
-  align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:900;transition:background 1s}
+#dead{position:fixed;inset:0;background:rgba(0,0,0,0);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:900;transition:background 1s}
 #dead.show{background:rgba(0,0,0,.92)}
 #dead-t{color:#cc2222;font-size:16px;letter-spacing:6px;display:none}
 #dead-s{color:#ffffff55;font-size:9px;letter-spacing:3px;display:none}
-#dead-b{background:rgba(0,0,0,.8);border:1px solid #cc222266;color:#cc2222;
-  padding:9px 22px;font-size:9px;letter-spacing:3px;cursor:pointer;
-  font-family:'Courier New',monospace;display:none}
-#scan{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:.02;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,#000 2px,#000 3px)}
+#dead-b{background:rgba(0,0,0,.8);border:1px solid #cc222266;color:#cc2222;padding:9px 22px;font-size:9px;letter-spacing:3px;cursor:pointer;font-family:'Courier New',monospace;display:none}
+#scan{position:fixed;inset:0;pointer-events:none;z-index:8;opacity:.02;background:repeating-linear-gradient(0deg,transparent,transparent 2px,#000 2px,#000 3px)}
 </style>
 </head>
 <body>
 <div id="load">
   <h1>STOCKHOLM '95</h1>
-  <div id="load-sub">LADDAR...</div>
+  <div id="load-sub">LADDAR THREE.JS...</div>
   <div id="lbar"><div id="lfill"></div></div>
 </div>
 <canvas id="c"></canvas>
@@ -125,38 +109,26 @@ body{background:#000;overflow:hidden;font-family:'Courier New',monospace;touch-a
   <div id="dead-s">ARRESTERAD — STOCKHOLM POLIS 1995</div>
   <button id="dead-b" onclick="respawn()">FORTSÄTT</button>
 </div>
-<script src="three.min.js"></script>
+
 <script>
-// Load Three.js then start game
-var SRCS = [
-  'three.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-  'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
-  'https://unpkg.com/three@0.128.0/build/three.min.js'
-];
-var srcIdx = 0;
-function loadThree() {
-  if (srcIdx >= SRCS.length) {
-    document.getElementById('load-sub').textContent = 'FEL: Kan inte ladda Three.js';
-    document.getElementById('load-sub').style.color = '#ff4444';
-    return;
-  }
-  var s = document.createElement('script');
-  s.src = SRCS[srcIdx++];
-  s.onload = function() {
-    if (typeof THREE !== 'undefined') {
-      document.getElementById('load-sub').textContent = 'STARTAR...';
-      setTimeout(init, 100);
-    } else {
-      loadThree();
-    }
+'use strict';
+
+// ── Three.js loader ──────────────────────────────────
+var _3src=['three.min.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js','https://unpkg.com/three@0.128.0/build/three.min.js'];
+var _3i=0;
+function _loadThree(){
+  if(_3i>=_3src.length){lp(0,'FEL: Three.js kunde inte laddas');return;}
+  var s=document.createElement('script');
+  s.src=_3src[_3i++];
+  s.onload=function(){
+    if(typeof THREE!=='undefined'){lp(5,'THREE.JS OK — STARTAR...');init();}
+    else _loadThree();
   };
-  s.onerror = function() { loadThree(); };
-  document.body.appendChild(s);
+  s.onerror=function(){_loadThree();};
+  document.head.appendChild(s);
 }
-window.addEventListener('load', function() {
-  setTimeout(loadThree, 200);
-});
+
+
 
 // ═══════════════════════════════════════════════════════
 //  STOCKHOLM '95 — Three.js GTA-style game
@@ -1068,6 +1040,11 @@ function loop(){
   renderer.render(scene,camera);
 }
 
+
+
+window.addEventListener('load',function(){
+  setTimeout(_loadThree,100);
+});
 </script>
 </body>
 </html>
