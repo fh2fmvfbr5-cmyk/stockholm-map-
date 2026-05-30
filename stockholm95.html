@@ -126,7 +126,6 @@ body{background:#000;overflow:hidden;font-family:'Courier New',monospace;touch-a
   <button id="dead-b" onclick="respawn()">FORTSÄTT</button>
 </div>
 <script>
-// Try local first, then multiple CDNs
 (function() {
   var srcs = [
     'three.min.js',
@@ -138,14 +137,12 @@ body{background:#000;overflow:hidden;font-family:'Courier New',monospace;touch-a
   function tryNext() {
     if (i >= srcs.length) {
       document.getElementById('load-sub').textContent = 'FEL: Kan inte ladda Three.js';
-      document.getElementById('load-sub').style.color = '#ff4444';
       return;
     }
     var s = document.createElement('script');
     s.src = srcs[i++];
-    s.onload = function() { 
-      document.getElementById('load-sub').textContent = 'THREE.JS LADDAT!';
-      window.threeLoaded = true;
+    s.onload = function() {
+      window.threeReady = true;
     };
     s.onerror = function() { tryNext(); };
     document.head.appendChild(s);
@@ -1065,16 +1062,19 @@ function loop(){
   renderer.render(scene,camera);
 }
 
+
+
+// ── BOOT ─────────────────────────────────────────────
 window.addEventListener('load', function() {
   var attempts = 0;
   function waitForThree() {
     attempts++;
     if (typeof THREE !== 'undefined') {
       init();
-    } else if (attempts < 50) {
+    } else if (attempts < 60) {
       setTimeout(waitForThree, 200);
     } else {
-      document.getElementById('load-sub').textContent = 'FEL: Three.js laddades inte. Kontrollera internet.';
+      document.getElementById('load-sub').textContent = 'FEL: Three.js laddades inte';
       document.getElementById('load-sub').style.color = '#ff4444';
     }
   }
