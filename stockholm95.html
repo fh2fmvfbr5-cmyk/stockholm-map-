@@ -125,7 +125,34 @@ body{background:#000;overflow:hidden;font-family:'Courier New',monospace;touch-a
   <div id="dead-s">ARRESTERAD — STOCKHOLM POLIS 1995</div>
   <button id="dead-b" onclick="respawn()">FORTSÄTT</button>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Try local first, then multiple CDNs
+(function() {
+  var srcs = [
+    'three.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+    'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
+    'https://unpkg.com/three@0.128.0/build/three.min.js'
+  ];
+  var i = 0;
+  function tryNext() {
+    if (i >= srcs.length) {
+      document.getElementById('load-sub').textContent = 'FEL: Kan inte ladda Three.js';
+      document.getElementById('load-sub').style.color = '#ff4444';
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = srcs[i++];
+    s.onload = function() { 
+      document.getElementById('load-sub').textContent = 'THREE.JS LADDAT!';
+      window.threeLoaded = true;
+    };
+    s.onerror = function() { tryNext(); };
+    document.head.appendChild(s);
+  }
+  tryNext();
+})();
+</script>
 <script>
 'use strict';
 // ═══════════════════════════════════════════════════════
@@ -1038,7 +1065,21 @@ function loop(){
   renderer.render(scene,camera);
 }
 
-window.addEventListener('load', init);
+window.addEventListener('load', function() {
+  var attempts = 0;
+  function waitForThree() {
+    attempts++;
+    if (typeof THREE !== 'undefined') {
+      init();
+    } else if (attempts < 50) {
+      setTimeout(waitForThree, 200);
+    } else {
+      document.getElementById('load-sub').textContent = 'FEL: Three.js laddades inte. Kontrollera internet.';
+      document.getElementById('load-sub').style.color = '#ff4444';
+    }
+  }
+  waitForThree();
+});
 </script>
 </body>
 </html>
