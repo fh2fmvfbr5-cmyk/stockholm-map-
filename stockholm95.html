@@ -828,7 +828,7 @@ function updateArea(){
   AREAS.forEach(function(a){var d=Math.sqrt((P.x-a.x)*(P.x-a.x)+(P.z-a.z)*(P.z-a.z));if(d<a.r&&d<bd){bd=d;best=a.name;}});
   if(best!==currentArea){currentArea=best;var el=document.getElementById('area-txt');el.textContent=best;el.style.opacity='1';setTimeout(function(){el.style.opacity='0';},3000);}
 }
-function updateRadio(dt){radioT+=dt;if(radioT>60){radioT=0;radioIdx=(radioIdx+1)%RADIO.length;document.getElementById('radio').textContent=RADIO[radioIdx];}}
+function updateRadio(dt){radioT+=dt;if(radioT>60){radioT=0;radioIdx=(radioIdx+1)%RADIO.length;var r=document.getElementById('radio');if(r)r.textContent=RADIO[radioIdx];}}
 function dynFactionEvents(dt){dynEventT-=dt;if(dynEventT>0)return;dynEventT=25+Math.random()*30;
   var fkeys=['biker','balkan','russian','white'];
   var f1=fkeys[Math.floor(Math.random()*4)],f2=fkeys[Math.floor(Math.random()*4)];
@@ -838,7 +838,7 @@ function dynFactionEvents(dt){dynEventT-=dt;if(dynEventT>0)return;dynEventT=25+M
   for(var i=0;i<3;i++){var n=makeNPC(ex+(Math.random()-.5)*8,ez+(Math.random()-.5)*8,f2,'gang');n.alertLvl=100;n.state='attack';}
 }
 function killPlayer(){if(P.dead)return;P.dead=true;P.hp=0;exitVehicle();
-  var ds=document.getElementById('dead');ds.style.display='flex';
+  var ds=document.getElementById('dead');if(ds)ds.style.display='flex';
   setTimeout(function(){ds.classList.add('show');setTimeout(function(){document.getElementById('dead-t').style.display='block';document.getElementById('dead-s').style.display='block';document.getElementById('dead-b').style.display='block';},1000);},200);}
 function respawn(){P.dead=false;P.hp=100;P.armor=0;P.money=Math.max(0,P.money-200);P.wanted=0;P.weapon=0;P.weapons=[JSON.parse(JSON.stringify(WEAPONS[0]))];P.x=0;P.z=0;pVel.x=0;pVel.z=0;var ds=document.getElementById('dead');ds.classList.remove('show');ds.style.display='none';document.getElementById('dead-t').style.display='none';document.getElementById('dead-s').style.display='none';document.getElementById('dead-b').style.display='none';showMsg('ARRESTERAD. $200 BÖTER.');updateWepHUD();}
 function openShop(name){
