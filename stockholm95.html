@@ -863,7 +863,7 @@ function closeShop(){document.getElementById('shop').style.display='none';}
 function showDlg(name,text){document.getElementById('dlg').style.display='block';document.getElementById('dlg-name').textContent=name.toUpperCase();document.getElementById('dlg-txt').textContent=text;setTimeout(closeDlg,7000);}
 function closeDlg(){document.getElementById('dlg').style.display='none';}
 function showMsg(t){var el=document.getElementById('msg-box');el.innerHTML=t.replace(/\n/g,'<br>');el.style.opacity='1';clearTimeout(showMsg._t);showMsg._t=setTimeout(function(){el.style.opacity='0';},3200);}
-function showDmg(){document.getElementById('hud').style.background='rgba(200,0,0,.18)';setTimeout(function(){document.getElementById('hud').style.background='';},100);}
+function showDmg(){var h=document.getElementById('hud');if(!h)return;h.style.background='rgba(200,0,0,.18)';setTimeout(function(){h.style.background='';},100);}
 function updateWepHUD(){var w=P.weapons[P.weapon];document.getElementById('wname').textContent=w.name;document.getElementById('wammo').textContent=w.ammo<0?'∞':w.ammo+'/'+w.maxAmmo;}
 function updateHUD(){
   document.getElementById('hp-fill').style.width=Math.max(0,P.hp)+'%';
@@ -1254,8 +1254,8 @@ window.addEventListener('load', function(){
     setTimeout(function(){
       document.getElementById('load').style.display='none';
       document.getElementById('hud').style.display='block';
+      showMsg("Valkommen till Stockholm 95\nWASD=rorrelse Klick=skjut F=bil E=interagera");
     }, 400);
-    showMsg("Valkommen till Stockholm 95\nWASD=rorrelse Klick=skjut F=bil E=interagera");
     requestAnimationFrame(loop);
   } catch(e) {
     document.getElementById('load-sub').textContent='FEL: '+e.message;
